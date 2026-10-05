@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결혼 준비 통합 체크리스트 & 대시보드</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-24">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-rose-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-rose-500 text-white flex items-center justify-center text-xl shadow-md shadow-rose-200">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Our Wedding Planner</h1>
+                    <p class="text-xs text-rose-500 font-medium" id="headerSubText">야탑 W힐스 컨벤션 • 2월 13일(토) 14:20</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="openSummaryModal()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen-to-square"></i> 예식 정보 편집
+                </button>
+                <button onclick="addNewCard()" class="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> 항목 추가
+                </button>
+                <button onclick="resetData()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs sm:text-sm font-medium rounded-xl transition" title="초기화">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pt-6 space-y-6">
+
+        <!-- Banner Summary Section (Editable Dashboard) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Wedding Hall & Schedule Highlight Card -->
+            <div class="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl p-5 text-white shadow-lg shadow-rose-100 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-4 -bottom-4 opacity-15 text-8xl">
+                    <i class="fa-solid fa-church"></i>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="inline-block px-2.5 py-0.5 bg-white/20 backdrop-blur-md text-xs font-semibold rounded-full">📍 예식 확정</span>
+                        <button onclick="openSummaryModal()" class="text-xs text-rose-100 hover:text-white bg-white/10 px-2 py-0.5 rounded-lg transition">수정</button>
+                    </div>
+                    <h2 class="text-lg font-bold" id="dashVenue">야탑 W힐스 컨벤션</h2>
+                    <p class="text-sm opacity-90 mt-0.5" id="dashDateTime">2.13 (토) 오후 2시 20분 시작</p>
+                    <p class="text-xs text-rose-100 mt-1 font-light" id="dashArrivalTime"><i class="fa-regular fa-clock mr-1"></i>최소 도착시간: 오후 1시 00분</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-white/20 flex justify-between items-center text-xs">
+                    <span>우선순위</span>
+                    <span class="font-semibold text-rose-100" id="dashPriority">신혼여행 > 메이크업 > 드레스</span>
+                </div>
+            </div>
+
+            <!-- Total Combined Budget Card -->
+            <div class="bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col justify-between relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Grand Total</span>
+                        <h3 class="text-base font-bold text-white mt-1">항목별 예산 총합계</h3>
+                    </div>
+                    <div class="p-2 bg-rose-500/20 text-rose-400 rounded-xl text-sm">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                </div>
+                <div class="my-3">
+                    <div class="text-3xl font-black text-rose-400 tracking-tight" id="dashGrandTotal">0 <span class="text-sm font-normal text-slate-300">만원</span></div>
+                    <p class="text-xs text-slate-400 mt-1">아래 등록된 모든 카드의 예산 자동 합산</p>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full w-full animate-pulse"></div>
+                </div>
+            </div>
+
+            <!-- Hall & SDM Reference Card -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Quick Info</span>
+                        <h3 class="text-base font-bold text-slate-800 mt-1">기본 예산 가이드</h3>
+                    </div>
+                    <div class="p-2 bg-purple-50 text-purple-500 rounded-xl text-sm">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+                <div class="my-2 space-y-2 text-xs">
+                    <div class="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span class="text-slate-500">예식장 총비용</span>
+                        <span class="font-bold text-slate-800" id="dashHallTotal">995 만원</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">스드메 범위</span>
+                        <span class="font-bold text-purple-600" id="dashSdmTotal">165 ~ 200 만원</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400" id="dashSdmDetail">헬퍼비 등 기타 필수 비용 110만원 별도</p>
+            </div>
+        </section>
+
+        <!-- Search & Filter Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
+                <button onclick="filterCards('all')" class="filter-btn active px-3.5 py-1.5 text-xs font-medium rounded-xl bg-slate-900 text-white transition">전체보기</button>
+                <button onclick="filterCards('대기')" class="filter-btn px-3.5 py-1.5 text-xs font-medium rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">대기중</button>
+                <button onclick="filterCards('진행중')" class="filter-btn px-3.5 py-1.5 text-xs font-medium rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">진행중</button>
+                <button onclick="filterCards('완료')" class="filter-btn px-3.5 py-1.5 text-xs font-medium rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">완료</button>
+            </div>
+            <div class="relative w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" onkeyup="searchCards()" placeholder="항목 및 메모 검색..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-rose-400">
+            </div>
+        </div>
+
+        <!-- Main Items Cards Grid -->
+        <div id="plannerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- JavaScript will render cards dynamically -->
+        </div>
+
+        <!-- Bottom Budget Summary Bar -->
+        <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/90 backdrop-blur-md text-white rounded-2xl px-6 py-3.5 shadow-2xl border border-slate-700/50 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-base">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+                <div>
+                    <p class="text-[11px] text-slate-400">계획 예산 합계</p>
+                    <p class="text-sm font-semibold text-slate-200"><span id="bottomCardCount">0</span>개 항목 등록됨</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-slate-400 font-medium mr-1">총 예상 금액:</span>
+                <span class="text-xl sm:text-2xl font-black text-rose-400" id="bottomGrandTotal">0 만원</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for Editing Top Summary & Reference -->
+    <div id="summaryModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl transition-all scale-95 opacity-0 transform" id="summaryModalContainer">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+                <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-rose-500 mr-1.5"></i> 예식 정보 편집</h3>
+                <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="saveSummaryData(event)" class="space-y-3.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">예식장 이름</label>
+                        <input type="text" id="inputVenue" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">예식 일시</label>
+                        <input type="text" id="inputDateTime" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">최소 도착 시간</label>
+                        <input type="text" id="inputArrivalTime" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">우선순위 요약</label>
+                        <input type="text" id="inputPriority" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-semibold text-amber-600 mb-1">예식장 예산 가이드</label>
+                    <input type="text" id="inputHallTotal" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-semibold text-purple-600 mb-1">스드메 예산 범위 가이드</label>
+                    <input type="text" id="inputSdmTotal" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">스드메 예산 세부내역</label>
+                    <input type="text" id="inputSdmDetail" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeSummaryModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium transition">취소</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-medium transition shadow-md">저장하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Editing/Adding Item Card with Individual Budget Field -->
+    <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl transition-all scale-95 opacity-0 transform" id="modalContainer">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+                <h3 class="text-base font-bold text-slate-800" id="modalTitle">항목 편집</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="editForm" onsubmit="saveModalData(event)" class="space-y-4">
+                <input type="hidden" id="modalItemId">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">카테고리명</label>
+                    <input type="text" id="modalCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-rose-600 mb-1"><i class="fa-solid fa-won-sign mr-1"></i>계획 예산 (만원 단위, 숫자만 입력)</label>
+                    <input type="number" id="modalBudget" placeholder="예: 995 (995만원의 경우)" class="w-full px-3 py-2 bg-rose-50/50 border border-rose-200 rounded-xl text-xs font-bold text-rose-600 focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">상태</label>
+                        <select id="modalStatus" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            <option value="대기">⏳ 대기</option>
+                            <option value="진행중">🚀 진행중</option>
+                            <option value="완료">✅ 완료</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">아이콘</label>
+                        <select id="modalIcon" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            <option value="fa-church">⛪ 예식장</option>
+                            <option value="fa-camera">📸 스튜디오</option>
+                            <option value="fa-person-dress">👗 드레스</option>
+                            <option value="fa-wand-magic-sparkles">💄 메이크업</option>
+                            <option value="fa-plane">✈️ 신혼여행</option>
+                            <option value="fa-user-tie">👔 예복/한복</option>
+                            <option value="fa-bus">🚌 버스대절</option>
+                            <option value="fa-music">🎵 축가</option>
+                            <option value="fa-envelope">✉️ 청첩장</option>
+                            <option value="fa-video">📹 영상</option>
+                            <option value="fa-list-check">📋 기타</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">상세 구성 내용 (줄바꿈 구분)</label>
+                    <textarea id="modalContent" rows="5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none leading-relaxed"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">특이사항 / 메모</label>
+                    <input type="text" id="modalMemo" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none" placeholder="비고 입력">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium transition">취소</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-medium transition shadow-md shadow-rose-200">저장하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Realtime Database Integration Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKC1BhZwLqCBBcc4Rx4HO5jW3w2e29fUo",
+            authDomain: "wedding-planner-44455.firebaseapp.com",
+            databaseURL: "https://wedding-planner-44455-default-rtdb.firebaseio.com",
+            projectId: "wedding-planner-44455",
+            storageBucket: "wedding-planner-44455.firebasestorage.app",
+            messagingSenderId: "713166525068",
+            appId: "1:713166525068:web:9e1a056b9aa070e58f21a9",
+            measurementId: "G-8SK35PFNYS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const weddingRef = ref(db, 'wedding_planner');
+
+        // Initial Data Defaults with Individual Budget Fields
+        const defaultSummaryData = {
+            venue: "야탑 W힐스 컨벤션",
+            dateTime: "2.13 (토) 오후 2시 20분 시작",
+            arrivalTime: "최소 도착시간: 오후 1시 00분",
+            priority: "신혼여행 > 메이크업 > 드레스",
+            hallTotal: "995 만원",
+            sdmTotal: "165 ~ 200 만원",
+            sdmDetail: "헬퍼비 등 기타 필수 비용 110만원 별도"
+        };
+
+        const initialPlannerData = [
+            {
+                id: 1,
+                category: "예식장",
+                icon: "fa-church",
+                status: "완료",
+                budget: 995,
+                content: [
+                    "야탑 W힐스 컨벤션",
+                    "일시: 2.13 (토) 오후 2시 20분",
+                    "식대: 5.3만 * 150명 (795만)",
+                    "대관료 170만 + 컨시어지 30만"
+                ],
+                memo: "보증인원 150명 확정"
+            },
+            {
+                id: 2,
+                category: "스튜디오",
+                icon: "fa-camera",
+                status: "진행중",
+                budget: 0,
+                content: [
+                    "1. Flow 토탈 (자체 드레스 + 알리1 / 헤어변형 상주여부 문의필요)",
+                    "2. 세미앙 비토탈 (드레스 2벌 직접 수급 + 숨고 헤어변형 / 메이크업 셀프)"
+                ],
+                memo: "Flow 헤어변형 옵션 상세 확인 우선"
+            },
+            {
+                id: 3,
+                category: "드레스 (잔비즈)",
+                icon: "fa-person-dress",
+                status: "대기",
+                budget: 0,
+                content: [
+                    "1순위: 제이스포사",
+                    "2순위: 아이테오",
+                    "3순위: 펠리즈 노비아"
+                ],
+                memo: "투어 일정 잡기"
+            },
+            {
+                id: 4,
+                category: "메이크업",
+                icon: "fa-wand-magic-sparkles",
+                status: "진행중",
+                budget: 0,
+                content: [
+                    "0순위: 에브뉴준오 (제휴 여부 확인)",
+                    "1순위: 서의 (seoui_official) (제휴 여부 확인)",
+                    "2순위: 히엘"
+                ],
+                memo: "예산 우선순위 2위 카테고리"
+            },
+            {
+                id: 5,
+                category: "신혼여행",
+                icon: "fa-plane",
+                status: "진행중",
+                budget: 800,
+                content: [
+                    "일정: 방콕(5박) + 몰디브(4박)",
+                    "출발: 2.15(월) ~ 16일 간 출발",
+                    "우선업체: 투어민",
+                    "몰디브 예산: 4박 기준 800만원 (AI 포함)"
+                ],
+                memo: "예산 우선순위 1위 카테고리"
+            },
+            {
+                id: 6,
+                category: "혼주 한복",
+                icon: "fa-user-tie",
+                status: "진행중",
+                budget: 0,
+                content: [
+                    "업체: 배틀한복",
+                    "예약일시: 10.9 (한글날) 오후 3시"
+                ],
+                memo: "방문 상담 예정"
+            },
+            {
+                id: 7,
+                category: "신랑 / 혼주 예복",
+                icon: "fa-user-tie",
+                status: "대기",
+                budget: 0,
+                content: [
+                    "신랑 예복: 대여 고려 중",
+                    "혼주 예복: 미정"
+                ],
+                memo: "대여 및 맞춤 견적 비교 필요"
+            },
+            {
+                id: 8,
+                category: "버스 대절",
+                icon: "fa-bus",
+                status: "대기",
+                budget: 0,
+                content: [
+                    "노선: 부산 왕복 (1대)"
+                ],
+                memo: "출발 시각 및 탑승 장소 추후 협의"
+            },
+            {
+                id: 9,
+                category: "축가",
+                icon: "fa-music",
+                status: "대기",
+                budget: 0,
+                content: [
+                    "후보: 기윤 / 준우"
+                ],
+                memo: "곡 선정 및 부탁 연락 예정"
+            },
+            {
+                id: 10,
+                category: "본식 영상 / 청첩장",
+                icon: "fa-video",
+                status: "진행중",
+                budget: 0,
+                content: [
+                    "본식 영상: 영훈",
+                    "모바일 청첩장: 예식장 제공 서비스 포함",
+                    "종이 청첩장: 수량 산정 필요"
+                ],
+                memo: "영상 구성 미리 논의하기"
+            }
+        ];
+
+        window.summaryData = {};
+        window.plannerData = [];
+        window.currentFilter = 'all';
+
+        // Firebase Realtime Synchronization Listener
+        onValue(weddingRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                window.summaryData = data.summary || defaultSummaryData;
+                window.plannerData = data.items || initialPlannerData;
+            } else {
+                window.summaryData = defaultSummaryData;
+                window.plannerData = initialPlannerData;
+                saveToFirebase();
+            }
+            renderSummary();
+            renderCards();
+        });
+
+        window.saveToFirebase = function() {
+            set(weddingRef, {
+                summary: window.summaryData,
+                items: window.plannerData
+            });
+        };
+
+        // Render Summary & Calculate Grand Total Budget
+        window.renderSummary = function() {
+            document.getElementById('headerSubText').innerText = `${window.summaryData.venue} • ${window.summaryData.dateTime.split('시작')[0]}`;
+            document.getElementById('dashVenue').innerText = window.summaryData.venue;
+            document.getElementById('dashDateTime').innerText = window.summaryData.dateTime;
+            document.getElementById('dashArrivalTime').innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${window.summaryData.arrivalTime}`;
+            document.getElementById('dashPriority').innerText = window.summaryData.priority;
+            document.getElementById('dashHallTotal').innerText = window.summaryData.hallTotal;
+            document.getElementById('dashSdmTotal').innerText = window.summaryData.sdmTotal;
+            document.getElementById('dashSdmDetail').innerText = window.summaryData.sdmDetail;
+        };
+
+        // Render Card Grid & Calculate Sums
+        window.renderCards = function() {
+            const grid = document.getElementById('plannerGrid');
+            grid.innerHTML = '';
+
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            // Calculate Grand Total from all item budgets
+            let grandTotal = 0;
+            if (window.plannerData && window.plannerData.length > 0) {
+                grandTotal = window.plannerData.reduce((sum, item) => sum + (Number(item.budget) || 0), 0);
+            }
+
+            const formattedTotal = grandTotal.toLocaleString();
+            document.getElementById('dashGrandTotal').innerHTML = `${formattedTotal} <span class="text-sm font-normal text-slate-300">만원</span>`;
+            document.getElementById('bottomGrandTotal').innerText = `${formattedTotal} 만원`;
+            document.getElementById('bottomCardCount').innerText = window.plannerData.length;
+
+            const filtered = window.plannerData.filter(item => {
+                const matchFilter = (window.currentFilter === 'all') || (item.status === window.currentFilter);
+                const matchSearch = item.category.toLowerCase().includes(searchTerm) || 
+                                    item.content.some(c => c.toLowerCase().includes(searchTerm)) ||
+                                    (item.memo && item.memo.toLowerCase().includes(searchTerm));
+                return matchFilter && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400">
+                        <i class="fa-regular fa-folder-open text-4xl mb-2"></i>
+                        <p class="text-sm">해당하는 항목이 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group";
+
+                const statusStyles = {
+                    '대기': 'bg-slate-100 text-slate-600 border-slate-200',
+                    '진행중': 'bg-amber-50 text-amber-600 border-amber-200',
+                    '완료': 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                };
+
+                const contentList = item.content.map(text => 
+                    `<li class="text-xs text-slate-600 leading-relaxed flex items-start gap-1.5">
+                        <span class="text-slate-300 mt-0.5">•</span> <span>${text}</span>
+                     </li>`
+                ).join('');
+
+                const itemBudget = Number(item.budget) || 0;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center text-sm group-hover:bg-rose-50 group-hover:text-rose-500 transition">
+                                    <i class="fa-solid ${item.icon}"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-800 text-sm">${item.category}</h3>
+                            </div>
+                            
+                            <select onchange="updateStatus(${item.id}, this.value)" class="text-xs font-medium px-2 py-1 rounded-lg border ${statusStyles[item.status]} cursor-pointer focus:outline-none">
+                                <option value="대기" ${item.status === '대기' ? 'selected' : ''}>⏳ 대기</option>
+                                <option value="진행중" ${item.status === '진행중' ? 'selected' : ''}>🚀 진행중</option>
+                                <option value="완료" ${item.status === '완료' ? 'selected' : ''}>✅ 완료</option>
+                            </select>
+                        </div>
+
+                        <!-- Individual Budget Tag -->
+                        <div class="flex items-center justify-between bg-rose-50/60 border border-rose-100/80 px-3 py-1.5 rounded-xl my-2">
+                            <span class="text-[11px] font-medium text-rose-500"><i class="fa-solid fa-coins mr-1"></i>예상 예산</span>
+                            <span class="text-xs font-bold text-rose-600">${itemBudget > 0 ? itemBudget.toLocaleString() + ' 만원' : '미정 (0원)'}</span>
+                        </div>
+
+                        <ul class="space-y-1.5 my-2.5 bg-slate-50/50 p-3 rounded-xl border border-slate-100/80">
+                            ${contentList}
+                        </ul>
+                    </div>
+
+                    <div>
+                        ${item.memo ? `
+                        <div class="text-[11px] text-slate-400 bg-slate-50 px-2.5 py-1.5 rounded-lg mb-3 flex items-center gap-1.5">
+                            <i class="fa-regular fa-comment-dots text-slate-400"></i>
+                            <span class="truncate">${item.memo}</span>
+                        </div>
+                        ` : ''}
+
+                        <div class="flex justify-end items-center gap-1.5 pt-2 border-t border-slate-100">
+                            <button onclick="openModal(${item.id})" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition flex items-center gap-1">
+                                <i class="fa-regular fa-pen-to-square"></i> 편집
+                            </button>
+                            <button onclick="deleteCard(${item.id})" class="px-2.5 py-1 text-xs text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition flex items-center gap-1">
+                                <i class="fa-regular fa-trash-can"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        // Actions
+        window.updateStatus = function(id, newStatus) {
+            const idx = window.plannerData.findIndex(item => item.id === id);
+            if (idx !== -1) {
+                window.plannerData[idx].status = newStatus;
+                saveToFirebase();
+            }
+        };
+
+        window.filterCards = function(status) {
+            window.currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            event.target.classList.remove('bg-slate-100', 'text-slate-600');
+            event.target.classList.add('bg-slate-900', 'text-white');
+            renderCards();
+        };
+
+        window.searchCards = function() {
+            renderCards();
+        };
+
+        window.deleteCard = function(id) {
+            if (confirm('이 항목을 삭제하시겠습니까?')) {
+                window.plannerData = window.plannerData.filter(item => item.id !== id);
+                saveToFirebase();
+            }
+        };
+
+        window.resetData = function() {
+            if (confirm('모든 데이터를 초기 설정으로 리셋하시겠습니까?')) {
+                window.summaryData = defaultSummaryData;
+                window.plannerData = initialPlannerData;
+                saveToFirebase();
+            }
+        };
+
+        // Summary Modal
+        window.openSummaryModal = function() {
+            document.getElementById('inputVenue').value = window.summaryData.venue;
+            document.getElementById('inputDateTime').value = window.summaryData.dateTime;
+            document.getElementById('inputArrivalTime').value = window.summaryData.arrivalTime;
+            document.getElementById('inputPriority').value = window.summaryData.priority;
+            document.getElementById('inputHallTotal').value = window.summaryData.hallTotal;
+            document.getElementById('inputSdmTotal').value = window.summaryData.sdmTotal;
+            document.getElementById('inputSdmDetail').value = window.summaryData.sdmDetail;
+
+            const modal = document.getElementById('summaryModal');
+            const container = document.getElementById('summaryModalContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        window.closeSummaryModal = function() {
+            const modal = document.getElementById('summaryModal');
+            const container = document.getElementById('summaryModalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        };
+
+        window.saveSummaryData = function(e) {
+            e.preventDefault();
+            window.summaryData = {
+                venue: document.getElementById('inputVenue').value,
+                dateTime: document.getElementById('inputDateTime').value,
+                arrivalTime: document.getElementById('inputArrivalTime').value,
+                priority: document.getElementById('inputPriority').value,
+                hallTotal: document.getElementById('inputHallTotal').value,
+                sdmTotal: document.getElementById('inputSdmTotal').value,
+                sdmDetail: document.getElementById('inputSdmDetail').value
+            };
+            saveToFirebase();
+            closeSummaryModal();
+        };
+
+        // Item Card Modal
+        window.openModal = function(id = null) {
+            const modal = document.getElementById('editModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            if (id) {
+                const item = window.plannerData.find(i => i.id === id);
+                document.getElementById('modalTitle').innerText = '항목 수정하기';
+                document.getElementById('modalItemId').value = item.id;
+                document.getElementById('modalCategory').value = item.category;
+                document.getElementById('modalBudget').value = item.budget || 0;
+                document.getElementById('modalStatus').value = item.status;
+                document.getElementById('modalIcon').value = item.icon;
+                document.getElementById('modalContent').value = item.content.join('\n');
+                document.getElementById('modalMemo').value = item.memo || '';
+            } else {
+                document.getElementById('modalTitle').innerText = '새 항목 추가하기';
+                document.getElementById('modalItemId').value = '';
+                document.getElementById('editForm').reset();
+            }
+        };
+
+        window.closeModal = function() {
+            const modal = document.getElementById('editModal');
+            const container = document.getElementById('modalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        };
+
+        window.addNewCard = function() {
+            openModal(null);
+        };
+
+        window.saveModalData = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('modalItemId').value;
+            const category = document.getElementById('modalCategory').value;
+            const budget = Number(document.getElementById('modalBudget').value) || 0;
+            const status = document.getElementById('modalStatus').value;
+            const icon = document.getElementById('modalIcon').value;
+            const contentText = document.getElementById('modalContent').value;
+            const memo = document.getElementById('modalMemo').value;
+
+            const contentArr = contentText.split('\n').filter(line => line.trim() !== '');
+
+            if (id) {
+                const idx = window.plannerData.findIndex(item => item.id === parseInt(id));
+                if (idx !== -1) {
+                    window.plannerData[idx] = {
+                        ...window.plannerData[idx],
+                        category,
+                        budget,
+                        status,
+                        icon,
+                        content: contentArr,
+                        memo
+                    };
+                }
+            } else {
+                const newId = window.plannerData.length > 0 ? Math.max(...window.plannerData.map(p => p.id)) + 1 : 1;
+                window.plannerData.push({
+                    id: newId,
+                    category,
+                    budget,
+                    status,
+                    icon,
+                    content: contentArr,
+                    memo
+                });
+            }
+
+            saveToFirebase();
+            closeModal();
+        };
+    </script>
+</body>
+</html>
