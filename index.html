@@ -161,20 +161,6 @@
                 </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100">
-                <label class="block text-xs font-semibold text-amber-600 mb-1">예식장 예산 가이드</label>
-                <input type="text" id="inputHallTotal" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-            </div>
-
-            <div class="pt-2 border-t border-slate-100">
-                <label class="block text-xs font-semibold text-purple-600 mb-1">스드메 예산 범위 가이드</label>
-                <input type="text" id="inputSdmTotal" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">스드메 예산 세부내역</label>
-                <input type="text" id="inputSdmDetail" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-            </div>
-
             <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button type="button" onclick="closeSummaryModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium transition">취소</button>
                 <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-medium transition shadow-md">저장하기</button>
@@ -441,9 +427,6 @@
         document.getElementById('dashDateTime').innerText = window.summaryData.dateTime;
         document.getElementById('dashArrivalTime').innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${window.summaryData.arrivalTime}`;
         document.getElementById('dashPriority').innerText = window.summaryData.priority;
-        document.getElementById('dashHallTotal').innerText = window.summaryData.hallTotal;
-        document.getElementById('dashSdmTotal').innerText = window.summaryData.sdmTotal;
-        document.getElementById('dashSdmDetail').innerText = window.summaryData.sdmDetail;
     };
 
     // Render Card Grid & Calculate Sums (Object 변환 로직 반영으로 11번, 12번 항목 표시 지원)
