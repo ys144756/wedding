@@ -1,3 +1,9 @@
+제공해주신 코드를 바탕으로 각 항목별 '완료 금액(기지불)'과 '미결제 금액(앞으로 나갈 돈)'을 입력할 수 있도록 수정하고, 하단 플로팅 바에 앞으로 나갈 총 미결제 금액이 한눈에 보이도록 반영한 전체 코드입니다.
+주요 추가·수정 사항
+ * 항목별 금액 세분화: 모달 창 및 카드에 총 예산, 완료 금액(결제 완료), 미결제 금액(앞으로 나갈 돈) 필드가 추가되었습니다.
+ * 자동 계산 및 플로팅 바 연동: 모든 항목의 미결제 금액을 합산하여 하단 플로팅 바에 '앞으로 나갈 총 미결제 금액'이 실시간으로 표시됩니다.
+ * 불필요한 코드 정리: 아까 말씀하셨던 inputHallTotal, inputSdmTotal 등 삭제된 요소와 관련된 참조 에러가 나지 않도록 모달 및 함수를 깔끔하게 정리했습니다.
+수정된 전체 index.html 코드
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -21,7 +27,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 pb-24">
+<body class="text-slate-800 pb-28">
 
 <!-- Top Header -->
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-rose-100 shadow-sm">
@@ -50,7 +56,7 @@
 <main class="max-w-6xl mx-auto px-4 pt-6 space-y-6">
 
     <!-- Banner Summary Section (Editable Dashboard) -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Wedding Hall & Schedule Highlight Card -->
         <div class="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl p-5 text-white shadow-lg shadow-rose-100 relative overflow-hidden flex flex-col justify-between">
             <div class="absolute -right-4 -bottom-4 opacity-15 text-8xl">
@@ -76,15 +82,21 @@
             <div class="flex justify-between items-start">
                 <div>
                     <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Grand Total</span>
-                    <h3 class="text-base font-bold text-white mt-1">항목별 예산 총합계</h3>
+                    <h3 class="text-base font-bold text-white mt-1">예산 및 지출 요약</h3>
                 </div>
                 <div class="p-2 bg-rose-500/20 text-rose-400 rounded-xl text-sm">
                     <i class="fa-solid fa-calculator"></i>
                 </div>
             </div>
-            <div class="my-3">
-                <div class="text-3xl font-black text-rose-400 tracking-tight" id="dashGrandTotal">0 <span class="text-sm font-normal text-slate-300">만원</span></div>
-                <p class="text-xs text-slate-400 mt-1">아래 등록된 모든 카드의 예산 자동 합산</p>
+            <div class="my-3 grid grid-cols-2 gap-2">
+                <div>
+                    <p class="text-[11px] text-slate-400">전체 예산 합계</p>
+                    <div class="text-xl font-black text-white tracking-tight" id="dashGrandTotal">0 만원</div>
+                </div>
+                <div>
+                    <p class="text-[11px] text-rose-300">앞으로 나갈 미결제</p>
+                    <div class="text-xl font-black text-rose-400 tracking-tight" id="dashRemainingTotal">0 만원</div>
+                </div>
             </div>
             <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                 <div class="bg-rose-500 h-full w-full animate-pulse"></div>
@@ -112,19 +124,25 @@
     </div>
 
     <!-- Bottom Budget Summary Bar -->
-    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/90 backdrop-blur-md text-white rounded-2xl px-6 py-3.5 shadow-2xl border border-slate-700/50 flex items-center justify-between">
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/90 backdrop-blur-md text-white rounded-2xl px-6 py-3.5 shadow-2xl border border-slate-700/50 flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-base">
                 <i class="fa-solid fa-sack-dollar"></i>
             </div>
             <div>
-                <p class="text-[11px] text-slate-400">계획 예산 합계</p>
-                <p class="text-sm font-semibold text-slate-200"><span id="bottomCardCount">0</span>개 항목 등록됨</p>
+                <p class="text-[11px] text-slate-400">등록된 항목</p>
+                <p class="text-sm font-semibold text-slate-200"><span id="bottomCardCount">0</span>개</p>
             </div>
         </div>
-        <div class="text-right">
-            <span class="text-xs text-slate-400 font-medium mr-1">총 예상 금액:</span>
-            <span class="text-xl sm:text-2xl font-black text-rose-400" id="bottomGrandTotal">0 만원</span>
+        <div class="flex items-center gap-4 text-right">
+            <div>
+                <span class="text-[11px] text-slate-400 block">총 예산</span>
+                <span class="text-base font-bold text-white" id="bottomGrandTotal">0 만원</span>
+            </div>
+            <div class="border-l border-slate-700 pl-4">
+                <span class="text-[11px] text-rose-300 block">앞으로 나갈 돈 (미결제)</span>
+                <span class="text-lg sm:text-xl font-black text-rose-400" id="bottomRemainingTotal">0 만원</span>
+            </div>
         </div>
     </div>
 
@@ -169,7 +187,7 @@
     </div>
 </div>
 
-<!-- Modal for Editing/Adding Item Card with Individual Budget Field -->
+<!-- Modal for Editing/Adding Item Card with Individual Budget & Paid Fields -->
 <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl transition-all scale-95 opacity-0 transform" id="modalContainer">
         <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
@@ -185,9 +203,15 @@
                 <input type="text" id="modalCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-rose-600 mb-1"><i class="fa-solid fa-won-sign mr-1"></i>계획 예산 (만원 단위, 숫자만 입력)</label>
-                <input type="number" id="modalBudget" placeholder="예: 995 (995만원의 경우)" class="w-full px-3 py-2 bg-rose-50/50 border border-rose-200 rounded-xl text-xs font-bold text-rose-600 focus:ring-2 focus:ring-rose-400 outline-none">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">총 계획 예산 (만원)</label>
+                    <input type="number" id="modalBudget" placeholder="예: 800" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-2 focus:ring-rose-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-emerald-600 mb-1">완료 금액 (기지불, 만원)</label>
+                    <input type="number" id="modalPaid" placeholder="예: 100" class="w-full px-3 py-2 bg-emerald-50/50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-600 focus:ring-2 focus:ring-emerald-400 outline-none">
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -219,7 +243,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1">상세 구성 내용 (줄바꿈 구분)</label>
-                <textarea id="modalContent" rows="5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none leading-relaxed"></textarea>
+                <textarea id="modalContent" rows="4" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none leading-relaxed"></textarea>
             </div>
 
             <div>
@@ -256,15 +280,12 @@
     const db = getDatabase(app);
     const weddingRef = ref(db, 'wedding_planner');
 
-    // Initial Data Defaults with Individual Budget Fields
+    // Initial Data Defaults
     const defaultSummaryData = {
         venue: "야탑 W힐스 컨벤션",
         dateTime: "2.13 (토) 오후 2시 20분 시작",
         arrivalTime: "최소 도착시간: 오후 1시 00분",
-        priority: "신혼여행 > 메이크업 > 드레스",
-        hallTotal: "995 만원",
-        sdmTotal: "165 ~ 200 만원",
-        sdmDetail: "헬퍼비 등 기타 필수 비용 110만원 별도"
+        priority: "신혼여행 > 메이크업 > 드레스"
     };
 
     const initialPlannerData = [
@@ -274,6 +295,7 @@
             icon: "fa-church",
             status: "완료",
             budget: 995,
+            paid: 0,
             content: [
                 "야탑 W힐스 컨벤션",
                 "일시: 2.13 (토) 오후 2시 20분",
@@ -288,6 +310,7 @@
             icon: "fa-camera",
             status: "진행중",
             budget: 0,
+            paid: 0,
             content: [
                 "1. Flow 토탈 (자체 드레스 + 알리1 / 헤어변형 상주여부 문의필요)",
                 "2. 세미앙 비토탈 (드레스 2벌 직접 수급 + 숨고 헤어변형 / 메이크업 셀프)"
@@ -299,7 +322,8 @@
             category: "드레스 (잔비즈)",
             icon: "fa-person-dress",
             status: "대기",
-            budget: 0,
+            budget: 33,
+            paid: 0,
             content: [
                 "1순위: 제이스포사",
                 "2순위: 아이테오",
@@ -313,6 +337,7 @@
             icon: "fa-wand-magic-sparkles",
             status: "진행중",
             budget: 0,
+            paid: 0,
             content: [
                 "0순위: 에브뉴준오 (제휴 여부 확인)",
                 "1순위: 서의 (seoui_official) (제휴 여부 확인)",
@@ -326,6 +351,7 @@
             icon: "fa-plane",
             status: "진행중",
             budget: 800,
+            paid: 0,
             content: [
                 "일정: 방콕(5박) + 몰디브(4박)",
                 "출발: 2.15(월) ~ 16일 간 출발",
@@ -340,6 +366,7 @@
             icon: "fa-user-tie",
             status: "진행중",
             budget: 0,
+            paid: 0,
             content: [
                 "업체: 배틀한복",
                 "예약일시: 10.9 (한글날) 오후 3시"
@@ -352,6 +379,7 @@
             icon: "fa-user-tie",
             status: "대기",
             budget: 0,
+            paid: 0,
             content: [
                 "신랑 예복: 대여 고려 중",
                 "혼주 예복: 미정"
@@ -364,6 +392,7 @@
             icon: "fa-bus",
             status: "대기",
             budget: 0,
+            paid: 0,
             content: [
                 "노선: 부산 왕복 (1대)"
             ],
@@ -375,6 +404,7 @@
             icon: "fa-music",
             status: "대기",
             budget: 0,
+            paid: 0,
             content: [
                 "후보: 기윤 / 준우"
             ],
@@ -386,6 +416,7 @@
             icon: "fa-video",
             status: "진행중",
             budget: 0,
+            paid: 0,
             content: [
                 "본식 영상: 영훈",
                 "모바일 청첩장: 예식장 제공 서비스 포함",
@@ -399,7 +430,7 @@
     window.plannerData = [];
     window.currentFilter = 'all';
 
-    // Firebase Realtime Synchronization Listener (안전 수신 및 자동 덮어쓰기 방지)
+    // Firebase Realtime Synchronization Listener
     onValue(weddingRef, (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
@@ -420,7 +451,7 @@
         });
     };
 
-    // Render Summary & Calculate Grand Total Budget
+    // Render Summary
     window.renderSummary = function() {
         document.getElementById('headerSubText').innerText = `${window.summaryData.venue} • ${window.summaryData.dateTime.split('시작')[0]}`;
         document.getElementById('dashVenue').innerText = window.summaryData.venue;
@@ -429,14 +460,13 @@
         document.getElementById('dashPriority').innerText = window.summaryData.priority;
     };
 
-    // Render Card Grid & Calculate Sums (Object 변환 로직 반영으로 11번, 12번 항목 표시 지원)
+    // Render Card Grid & Calculate Totals (Budget, Paid, Remaining)
     window.renderCards = function() {
         const grid = document.getElementById('plannerGrid');
         grid.innerHTML = '';
 
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-        // Firebase 데이터를 항상 안전하게 배열로 변환 (객체 변환으로 10번 이후 항목 유실 완벽 방지)
         let rawData = [];
         if (Array.isArray(window.plannerData)) {
             rawData = window.plannerData;
@@ -446,12 +476,27 @@
 
         const cleanData = rawData.filter(item => item && (item.id !== undefined && item.id !== null));
 
-        // Calculate Grand Total from all item budgets
-        let grandTotal = cleanData.reduce((sum, item) => sum + (Number(item.budget) || 0), 0);
-        const formattedTotal = grandTotal.toLocaleString();
+        // Calculate Totals
+        let grandTotal = 0;
+        let totalPaid = 0;
+        let totalRemaining = 0;
 
-        document.getElementById('dashGrandTotal').innerHTML = `${formattedTotal} <span class="text-sm font-normal text-slate-300">만원</span>`;
-        document.getElementById('bottomGrandTotal').innerText = `${formattedTotal} 만원`;
+        cleanData.forEach(item => {
+            const budget = Number(item.budget) || 0;
+            const paid = Number(item.paid) || 0;
+            const remaining = Math.max(0, budget - paid);
+
+            grandTotal += budget;
+            totalPaid += paid;
+            totalRemaining += remaining;
+        });
+
+        // Update Dashboard & Footer UI
+        document.getElementById('dashGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
+        document.getElementById('dashRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
+        
+        document.getElementById('bottomGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
+        document.getElementById('bottomRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
         document.getElementById('bottomCardCount').innerText = cleanData.length;
 
         const filtered = cleanData.filter(item => {
@@ -490,7 +535,9 @@
                  </li>`
             ).join('');
 
-            const itemBudget = Number(item.budget) || 0;
+            const budget = Number(item.budget) || 0;
+            const paid = Number(item.paid) || 0;
+            const remaining = Math.max(0, budget - paid);
 
             card.innerHTML = `
                 <div>
@@ -509,10 +556,20 @@
                         </select>
                     </div>
 
-                    <!-- Individual Budget Tag -->
-                    <div class="flex items-center justify-between bg-rose-50/60 border border-rose-100/80 px-3 py-1.5 rounded-xl my-2">
-                        <span class="text-[11px] font-medium text-rose-500"><i class="fa-solid fa-coins mr-1"></i>예상 예산</span>
-                        <span class="text-xs font-bold text-rose-600">${itemBudget > 0 ? itemBudget.toLocaleString() + ' 만원' : '미정 (0원)'}</span>
+                    <!-- Budget & Payment Breakdown Tag -->
+                    <div class="bg-slate-50 border border-slate-100 p-2.5 rounded-xl my-2 space-y-1.5 text-xs">
+                        <div class="flex justify-between items-center text-slate-600">
+                            <span>총 예산</span>
+                            <span class="font-semibold text-slate-800">${budget.toLocaleString()} 만원</span>
+                        </div>
+                        <div class="flex justify-between items-center text-emerald-600">
+                            <span>완료 금액 (기지불)</span>
+                            <span class="font-semibold">${paid.toLocaleString()} 만원</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-1.5 border-t border-slate-200/60 text-rose-600 font-bold">
+                            <span>미결제 (앞으로 나갈 돈)</span>
+                            <span>${remaining.toLocaleString()} 만원</span>
+                        </div>
                     </div>
 
                     <ul class="space-y-1.5 my-2.5 bg-slate-50/50 p-3 rounded-xl border border-slate-100/80">
@@ -582,9 +639,6 @@
         document.getElementById('inputDateTime').value = window.summaryData.dateTime || '';
         document.getElementById('inputArrivalTime').value = window.summaryData.arrivalTime || '';
         document.getElementById('inputPriority').value = window.summaryData.priority || '';
-        document.getElementById('inputHallTotal').value = window.summaryData.hallTotal || '';
-        document.getElementById('inputSdmTotal').value = window.summaryData.sdmTotal || '';
-        document.getElementById('inputSdmDetail').value = window.summaryData.sdmDetail || '';
 
         const modal = document.getElementById('summaryModal');
         const container = document.getElementById('summaryModalContainer');
@@ -611,10 +665,7 @@
             venue: document.getElementById('inputVenue').value,
             dateTime: document.getElementById('inputDateTime').value,
             arrivalTime: document.getElementById('inputArrivalTime').value,
-            priority: document.getElementById('inputPriority').value,
-            hallTotal: document.getElementById('inputHallTotal').value,
-            sdmTotal: document.getElementById('inputSdmTotal').value,
-            sdmDetail: document.getElementById('inputSdmDetail').value
+            priority: document.getElementById('inputPriority').value
         };
         saveToFirebase();
         closeSummaryModal();
@@ -638,6 +689,7 @@
                 document.getElementById('modalItemId').value = item.id;
                 document.getElementById('modalCategory').value = item.category || '';
                 document.getElementById('modalBudget').value = item.budget || 0;
+                document.getElementById('modalPaid').value = item.paid || 0;
                 document.getElementById('modalStatus').value = item.status || '대기';
                 document.getElementById('modalIcon').value = item.icon || 'fa-list-check';
                 document.getElementById('modalContent').value = Array.isArray(item.content) ? item.content.join('\n') : '';
@@ -669,6 +721,7 @@
         const id = document.getElementById('modalItemId').value;
         const category = document.getElementById('modalCategory').value;
         const budget = Number(document.getElementById('modalBudget').value) || 0;
+        const paid = Number(document.getElementById('modalPaid').value) || 0;
         const status = document.getElementById('modalStatus').value;
         const icon = document.getElementById('modalIcon').value;
         const contentText = document.getElementById('modalContent').value;
@@ -686,6 +739,7 @@
                     ...list[idx],
                     category,
                     budget,
+                    paid,
                     status,
                     icon,
                     content: contentArr,
@@ -698,6 +752,7 @@
                 id: maxId + 1,
                 category,
                 budget,
+                paid,
                 status,
                 icon,
                 content: contentArr,
@@ -712,3 +767,4 @@
 </script>
 </body>
 </html>
+
