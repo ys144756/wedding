@@ -82,14 +82,18 @@
                     <i class="fa-solid fa-calculator"></i>
                 </div>
             </div>
-            <div class="my-3 grid grid-cols-2 gap-2">
-                <div>
-                    <p class="text-[11px] text-slate-400">전체 예산 합계</p>
-                    <div class="text-xl font-black text-white tracking-tight" id="dashGrandTotal">0 만원</div>
+            <div class="my-3 grid grid-cols-3 gap-2 text-center">
+                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+                    <p class="text-[10px] text-slate-400">총 예산</p>
+                    <div class="text-sm sm:text-base font-bold text-white tracking-tight mt-0.5" id="dashGrandTotal">0 만원</div>
                 </div>
-                <div>
-                    <p class="text-[11px] text-rose-300">앞으로 나갈 미결제</p>
-                    <div class="text-xl font-black text-rose-400 tracking-tight" id="dashRemainingTotal">0 만원</div>
+                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+                    <p class="text-[10px] text-emerald-400">결제 완료</p>
+                    <div class="text-sm sm:text-base font-bold text-emerald-400 tracking-tight mt-0.5" id="dashPaidTotal">0 만원</div>
+                </div>
+                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+                    <p class="text-[10px] text-rose-300">미결제</p>
+                    <div class="text-sm sm:text-base font-black text-rose-400 tracking-tight mt-0.5" id="dashRemainingTotal">0 만원</div>
                 </div>
             </div>
             <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
@@ -117,25 +121,29 @@
         <!-- JavaScript will render cards dynamically -->
     </div>
 
-    <!-- Bottom Budget Summary Bar -->
-    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/90 backdrop-blur-md text-white rounded-2xl px-6 py-3.5 shadow-2xl border border-slate-700/50 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-base">
-                <i class="fa-solid fa-sack-dollar"></i>
-            </div>
-            <div>
-                <p class="text-[11px] text-slate-400">등록된 항목</p>
-                <p class="text-sm font-semibold text-slate-200"><span id="bottomCardCount">0</span>개</p>
+    <!-- Bottom Budget Summary Bar (Aligned Floating Card) -->
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/95 backdrop-blur-md text-white rounded-2xl px-5 py-3 shadow-2xl border border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+                <span class="text-xs font-medium text-slate-300">전체 요약 (<span id="bottomCardCount">0</span>개 항목)</span>
             </div>
         </div>
-        <div class="flex items-center gap-4 text-right">
-            <div>
-                <span class="text-[11px] text-slate-400 block">총 예산</span>
-                <span class="text-base font-bold text-white" id="bottomGrandTotal">0 만원</span>
+
+        <div class="grid grid-cols-3 gap-2 w-full sm:w-auto text-center">
+            <div class="px-2.5 py-1 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                <span class="text-[10px] text-slate-400 block">총 예산</span>
+                <span class="text-xs sm:text-sm font-bold text-white" id="bottomGrandTotal">0 만원</span>
             </div>
-            <div class="border-l border-slate-700 pl-4">
-                <span class="text-[11px] text-rose-300 block">앞으로 나갈 돈 (미결제)</span>
-                <span class="text-lg sm:text-xl font-black text-rose-400" id="bottomRemainingTotal">0 만원</span>
+            <div class="px-2.5 py-1 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                <span class="text-[10px] text-emerald-400 block">결제 완료</span>
+                <span class="text-xs sm:text-sm font-bold text-emerald-400" id="bottomPaidTotal">0 만원</span>
+            </div>
+            <div class="px-2.5 py-1 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                <span class="text-[10px] text-rose-300 block">미결제</span>
+                <span class="text-xs sm:text-sm font-black text-rose-400" id="bottomRemainingTotal">0 만원</span>
             </div>
         </div>
     </div>
@@ -203,7 +211,7 @@
                     <input type="number" id="modalBudget" placeholder="예: 800" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-2 focus:ring-rose-400 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-emerald-600 mb-1">완료 금액 (기지불, 만원)</label>
+                    <label class="block text-xs font-semibold text-emerald-600 mb-1">결제 완료 (기지불, 만원)</label>
                     <input type="number" id="modalPaid" placeholder="예: 100" class="w-full px-3 py-2 bg-emerald-50/50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-600 focus:ring-2 focus:ring-emerald-400 outline-none">
                 </div>
             </div>
@@ -274,7 +282,6 @@
     const db = getDatabase(app);
     const weddingRef = ref(db, 'wedding_planner');
 
-    // Initial Data Defaults
     const defaultSummaryData = {
         venue: "야탑 W힐스 컨벤션",
         dateTime: "2.13 (토) 오후 2시 20분 시작",
@@ -424,7 +431,6 @@
     window.plannerData = [];
     window.currentFilter = 'all';
 
-    // Firebase Realtime Synchronization Listener
     onValue(weddingRef, (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
@@ -445,7 +451,6 @@
         });
     };
 
-    // Render Summary
     window.renderSummary = function() {
         document.getElementById('headerSubText').innerText = `${window.summaryData.venue} • ${window.summaryData.dateTime.split('시작')[0]}`;
         document.getElementById('dashVenue').innerText = window.summaryData.venue;
@@ -454,7 +459,6 @@
         document.getElementById('dashPriority').innerText = window.summaryData.priority;
     };
 
-    // Render Card Grid & Calculate Totals (Budget, Paid, Remaining)
     window.renderCards = function() {
         const grid = document.getElementById('plannerGrid');
         grid.innerHTML = '';
@@ -470,7 +474,6 @@
 
         const cleanData = rawData.filter(item => item && (item.id !== undefined && item.id !== null));
 
-        // Calculate Totals
         let grandTotal = 0;
         let totalPaid = 0;
         let totalRemaining = 0;
@@ -485,11 +488,13 @@
             totalRemaining += remaining;
         });
 
-        // Update Dashboard & Footer UI
+        // 상단 대시보드 및 하단 플로팅 바 반영 (총 예산, 결제 완료, 미결제)
         document.getElementById('dashGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
+        document.getElementById('dashPaidTotal').innerText = `${totalPaid.toLocaleString()} 만원`;
         document.getElementById('dashRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
         
         document.getElementById('bottomGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
+        document.getElementById('bottomPaidTotal').innerText = `${totalPaid.toLocaleString()} 만원`;
         document.getElementById('bottomRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
         document.getElementById('bottomCardCount').innerText = cleanData.length;
 
@@ -557,7 +562,7 @@
                             <span class="font-semibold text-slate-800">${budget.toLocaleString()} 만원</span>
                         </div>
                         <div class="flex justify-between items-center text-emerald-600">
-                            <span>완료 금액 (기지불)</span>
+                            <span>결제 완료</span>
                             <span class="font-semibold">${paid.toLocaleString()} 만원</span>
                         </div>
                         <div class="flex justify-between items-center pt-1.5 border-t border-slate-200/60 text-rose-600 font-bold">
@@ -593,7 +598,6 @@
         });
     };
 
-    // Actions
     window.updateStatus = function(id, newStatus) {
         let list = Array.isArray(window.plannerData) ? window.plannerData : Object.values(window.plannerData);
         const idx = list.findIndex(item => item && item.id === id);
@@ -627,7 +631,6 @@
         }
     };
 
-    // Summary Modal
     window.openSummaryModal = function() {
         document.getElementById('inputVenue').value = window.summaryData.venue || '';
         document.getElementById('inputDateTime').value = window.summaryData.dateTime || '';
@@ -665,7 +668,6 @@
         closeSummaryModal();
     };
 
-    // Item Card Modal
     window.openModal = function(id = null) {
         const modal = document.getElementById('editModal');
         const container = document.getElementById('modalContainer');
