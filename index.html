@@ -21,7 +21,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 pb-28">
+<body class="text-slate-800 pb-40">
 
 <!-- Top Header -->
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-rose-100 shadow-sm">
@@ -49,8 +49,8 @@
 
 <main class="max-w-6xl mx-auto px-4 pt-6 space-y-6">
 
-    <!-- Banner Summary Section (Editable Dashboard) -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Banner Summary Section (Editable Dashboard) - 단일 카드 배치 -->
+    <section class="grid grid-cols-1 gap-4">
         <!-- Wedding Hall & Schedule Highlight Card -->
         <div class="bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl p-5 text-white shadow-lg shadow-rose-100 relative overflow-hidden flex flex-col justify-between">
             <div class="absolute -right-4 -bottom-4 opacity-15 text-8xl">
@@ -68,36 +68,6 @@
             <div class="mt-4 pt-3 border-t border-white/20 flex justify-between items-center text-xs">
                 <span>우선순위</span>
                 <span class="font-semibold text-rose-100" id="dashPriority">신혼여행 > 메이크업 > 드레스</span>
-            </div>
-        </div>
-
-        <!-- Total Combined Budget Card -->
-        <div class="bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col justify-between relative overflow-hidden">
-            <div class="flex justify-between items-start">
-                <div>
-                    <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Grand Total</span>
-                    <h3 class="text-base font-bold text-white mt-1">예산 및 지출 요약</h3>
-                </div>
-                <div class="p-2 bg-rose-500/20 text-rose-400 rounded-xl text-sm">
-                    <i class="fa-solid fa-calculator"></i>
-                </div>
-            </div>
-            <div class="my-3 grid grid-cols-3 gap-2 text-center">
-                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                    <p class="text-[10px] text-slate-400">총 예산</p>
-                    <div class="text-sm sm:text-base font-bold text-white tracking-tight mt-0.5" id="dashGrandTotal">0 만원</div>
-                </div>
-                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                    <p class="text-[10px] text-emerald-400">결제 완료</p>
-                    <div class="text-sm sm:text-base font-bold text-emerald-400 tracking-tight mt-0.5" id="dashPaidTotal">0 만원</div>
-                </div>
-                <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                    <p class="text-[10px] text-rose-300">미결제</p>
-                    <div class="text-sm sm:text-base font-black text-rose-400 tracking-tight mt-0.5" id="dashRemainingTotal">0 만원</div>
-                </div>
-            </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-rose-500 h-full w-full animate-pulse"></div>
             </div>
         </div>
     </section>
@@ -121,7 +91,7 @@
         <!-- JavaScript will render cards dynamically -->
     </div>
 
-    <!-- Bottom Budget Summary Bar (Aligned Floating Card) -->
+    <!-- Bottom Budget Summary Bar (여유 있는 위치 및 겹침 방지) -->
     <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-4xl bg-slate-900/95 backdrop-blur-md text-white rounded-2xl px-5 py-3 shadow-2xl border border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
             <div class="flex items-center gap-2.5">
@@ -266,7 +236,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCKC1BhZwLqCBBcc4Rx4HO5jW3w2e29fUo",
         authDomain: "wedding-planner-44455.firebaseapp.com",
@@ -488,11 +457,7 @@
             totalRemaining += remaining;
         });
 
-        // 상단 대시보드 및 하단 플로팅 바 반영 (총 예산, 결제 완료, 미결제)
-        document.getElementById('dashGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
-        document.getElementById('dashPaidTotal').innerText = `${totalPaid.toLocaleString()} 만원`;
-        document.getElementById('dashRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
-        
+        // 하단 플로팅 바 반영
         document.getElementById('bottomGrandTotal').innerText = `${grandTotal.toLocaleString()} 만원`;
         document.getElementById('bottomPaidTotal').innerText = `${totalPaid.toLocaleString()} 만원`;
         document.getElementById('bottomRemainingTotal').innerText = `${totalRemaining.toLocaleString()} 만원`;
